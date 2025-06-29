@@ -1,21 +1,36 @@
-import 'dotenv/config'
-import express from 'express';
-import cors from 'cors'
-import { connect } from 'mongoose';
-import connectDB from './configs/mongodb.js';
-import userRouter from './routes/userRoutes.js';
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import connectDB from "./configs/mongodb.js";
+import userRouter from "./routes/userRoutes.js";
 
+const PORT = process.env.PORT || 4000;
 
-const PORT=process.env.PORT|| 4000
+const app = express();
 
-const app=express()
-await connectDB()
+app.use(express.json());
+app.use(cors());
 
-app.use(express.json())
-app.use(cors())
+app.get("/", (req, res) =>
+  res.send("API working "),
+);
+app.use("/api/user", userRouter);
 
+//  Async function to start the server after DB connects
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(
+        `Server running on PORT ${PORT}`,
+      );
+    });
+  } catch (error) {
+    console.error(
+      " Failed to connect to DB or start server:",
+      error.message,
+    );
+  }
+};
 
-app.get('/',(req,res)=>res.send("API working"))
-app.use('/api/user/',userRouter)
-
-app.listen(PORT,()=>console.log(`Server running on PORT ${PORT}`))
+startServer();

@@ -1,42 +1,45 @@
 import svix from "svix";
 const { Webhook } = svix;
+
 import userModel from "../models/userModel.js";
+
 const clerkWebhooks = async (req, res) => {
   try {
-    const whook = new WebHook(
+    const whook = new Webhook(
       process.env.Clerk_Webhook_Secret,
-    );
-    await whook.verify(JSON.stringify(req.body), {
-      "svix-id": req.headers["svix-id"],
-      "svix-timestamp":
-        req.headers["svix-timestamp"],
-      "svix-signature":
-        req.headers["svix-signature"],
-    });
+    ); 
 
-    const { data, type } = req.body;
+    const evt = whook.verify(
+      JSON.stringify(req.body),
+      {
+        "svix-id": req.headers["svix-id"],
+        "svix-timestamp":
+          req.headers["svix-timestamp"],
+        "svix-signature":
+          req.headers["svix-signature"],
+      },
+    );
+
+    const { data, type } = evt;
 
     switch (type) {
       case "user.created": {
         const userData = {
           clerkId: data.id,
           email:
-            data.email_addresses[0]
-              .email_addresses,
+            data.email_addresses[0].email_address,
           firstName: data.first_name,
           lastName: data.last_name,
           photo: data.image_url,
         };
         await userModel.create(userData);
-        res.json({});
-        break;
+        return res.json({});
       }
 
       case "user.updated": {
         const userData = {
           email:
-            data.email_addresses[0]
-              .email_addresses,
+            data.email_addresses[0].email_address, 
           firstName: data.first_name,
           lastName: data.last_name,
           photo: data.image_url,
@@ -45,26 +48,30 @@ const clerkWebhooks = async (req, res) => {
           { clerkId: data.id },
           userData,
         );
-        res.json({});
-        break;
+        return res.json({});
       }
+
       case "user.deleted": {
         await userModel.findOneAndDelete({
           clerkId: data.id,
         });
-        res.json({});
-        break;
+        return res.json({});
       }
 
       default:
-        break;
+        return res
+          .status(400)
+          .json({
+            message: "Unhandled event type",
+          });
     }
   } catch (error) {
     console.log(error.message);
-    req.json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
 export { clerkWebhooks };
