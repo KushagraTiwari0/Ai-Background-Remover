@@ -6,7 +6,7 @@ import userModel from "../models/userModel.js";
 const clerkWebhooks = async (req, res) => {
   try {
     const whook = new Webhook(
-      process.env.Clerk_Webhook_Secret,
+      process.env.CLERK_WEBHOOK_SECRET,
     ); 
 
     const evt = whook.verify(
