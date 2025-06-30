@@ -9,7 +9,7 @@ const clerkWebhooks = async (req, res) => {
       process.env.CLERK_WEBHOOK_SECRET,
     ); 
 
-    const evt = whook.verify(
+    await whook.verify(
       JSON.stringify(req.body),
       {
         "svix-id": req.headers["svix-id"],
@@ -20,7 +20,8 @@ const clerkWebhooks = async (req, res) => {
       },
     );
 
-    const { data, type } = evt;
+
+    const { data, type } = req.body;
 
     switch (type) {
       case "user.created": {
@@ -33,7 +34,8 @@ const clerkWebhooks = async (req, res) => {
           photo: data.image_url,
         };
         await userModel.create(userData);
-        return res.json({});
+         res.json({});
+         break;
       }
 
       case "user.updated": {
@@ -48,14 +50,17 @@ const clerkWebhooks = async (req, res) => {
           { clerkId: data.id },
           userData,
         );
-        return res.json({});
+      res.json({});
+      break;
+
       }
 
       case "user.deleted": {
         await userModel.findOneAndDelete({
           clerkId: data.id,
         });
-        return res.json({});
+         res.json({});
+         break
       }
 
       default:
