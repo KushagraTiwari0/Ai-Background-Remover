@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./configs/mongodb.js";
 import userRouter from "./routes/userRoutes.js";
+import imageRouter from "./routes/imageRoutes.js";
 
 const PORT = process.env.PORT || 4000;
 
@@ -15,6 +16,7 @@ app.get("/", (req, res) =>
   res.send("API working "),
 );
 app.use("/api/user", userRouter);
+app.use('/api/image',imageRouter)
 
 //  Async function to start the server after DB connects
 const startServer = async () => {
