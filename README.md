@@ -4,9 +4,9 @@ An AI-powered web application that removes image backgrounds instantly.
 Built with React, Clerk Authentication, MongoDB, and the Clipdrop API, deployed seamlessly on Vercel.
 🌐 Live Demo
 
-Frontend (React App): 🔗 [Visit Website]([url](https://ai-background-remover-vzbe.vercel.app/))
+Frontend (React App): https://ai-background-remover-vzbe.vercel.app/
 
-Backend (Express API): 🔗 [API Endpoint]([url](https://ai-background-remover-mu.vercel.app/))
+Backend (Express API): https://ai-background-remover-mu.vercel.app/
 
 🚀 Features
 
